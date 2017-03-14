@@ -15,40 +15,18 @@ from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import MaxPooling2D
 from sklearn.utils import shuffle
 import matplotlib.pyplot as plt
+#import cv2
 
 # There is 1 output class
 nb_classes = 1 
 
 
-#pickle_train = 'train0.pickle'
-#pickle_validation = 'validation0.pickle'
 pickle_train = 'train.pickle'
 pickle_validation = 'validation.pickle'
 
 batch_size = 32
 
 
-
-#==============================================================================
-# # load the training dataset from the train pickle 
-# with open(pickle_train, 'rb') as f:
-#     #train, test1, _ = ds.getDigitStruct()
-#     save = pickle.load(f)
-#     train_dataset = save['train_dataset']
-#     train_labels = np.array(save['train_labels'])
-#     #delete save to free up memory
-#     del save
-#     print('Training set: ', train_dataset.shape, train_labels.shape)
-#    
-#  
-# # load the validation dataset from the test pickle   
-# with open(pickle_validation, 'rb') as f:
-#     save = pickle.load(f)
-#     valid_dataset = save['valid_dataset']
-#     valid_labels = np.array(save['valid_labels'])
-#     del save
-#     print('Validation set: ', valid_dataset.shape, valid_labels.shape)
-#==============================================================================
 
 # load the training dataset from the train pickle 
 with open(pickle_train, 'rb') as f:
@@ -59,6 +37,7 @@ with open(pickle_train, 'rb') as f:
     #delete save to free up memory
     del save
     print('Training set: ', np.array(train_dataset).shape, np.array(train_labels).shape)
+    
    
  
 # load the validation dataset from the test pickle   
@@ -91,6 +70,7 @@ validation_generator = generator(valid_dataset, valid_labels, batch_size=32)
 ch, row, col = 3, 80, 320  # Trimmed image format
 
 shape = (ch, row, col)
+
 # number of convolutional filters to use
 nb_filters = [16, 8, 4, 2]
 	
@@ -101,9 +81,6 @@ pool_size = 2
 # convolution kernel size
 kernel_size = 3
 
-def crop(x):
-    return x[:, 60:134, 0:320]
-
 model = Sequential()
 # Preprocess incoming data, centered around zero with small standard deviation 
 model.add(Cropping2D(cropping=((60,20), (0,0)), input_shape=(160,320,3)))
@@ -112,19 +89,19 @@ model.add(Lambda(lambda x: x/127.5 - 1.))
 # Starting with the convolutional layer
 model.add(Convolution2D(nb_filters[0], kernel_size, kernel_size))
 # ReLU Activation
-model.add(Activation('relu'))
+model.add(Activation('elu'))
 # The second conv layer will convert 16 channels into 8 channels
 model.add(Convolution2D(nb_filters[1], kernel_size, kernel_size))
 # ReLU Activation
-model.add(Activation('relu'))
+model.add(Activation('elu'))
 # The second conv layer will convert 8 channels into 4 channels
 model.add(Convolution2D(nb_filters[2], kernel_size, kernel_size))
 # ReLU Activation
-model.add(Activation('relu'))
+model.add(Activation('elu'))
 # The second conv layer will convert 4 channels into 2 channels
 model.add(Convolution2D(nb_filters[3], kernel_size, kernel_size))
 # ReLU Activation
-model.add(Activation('relu'))
+model.add(Activation('elu'))
 # Apply Max Pooling for each 2 x 2 pixels
 model.add(MaxPooling2D(pool_size=(pool_size, pool_size), strides=None, border_mode='valid', dim_ordering='default'))# MaxPooling2D(pool_size=pool_size))
 # Dropout with keep probability 0.5
@@ -133,17 +110,19 @@ model.add(Dropout(0.5))
 # Flatten the matrix. The input has size of 360
 model.add(Flatten())
 # Input 360 Output 16
-model.add(Dense(16))
+model.add(Dense(512))
 # ReLU Activation
-model.add(Activation('relu'))
+model.add(Activation('elu'))
+# Dropout with keep probability 0.5
+model.add(Dropout(0.5))
+# Input 16 Output 16
+model.add(Dense(64))
+# ReLU Activation
+model.add(Activation('elu'))
 # Input 16 Output 16
 model.add(Dense(16))
 # ReLU Activation
-model.add(Activation('relu'))
-# Input 16 Output 16
-model.add(Dense(16))
-# ReLU Activation
-model.add(Activation('relu'))
+model.add(Activation('elu'))
 # Dropout with keep probability 0.5
 model.add(Dropout(0.5))
 # Input 16 Output 1
@@ -152,8 +131,9 @@ model.add(Dense(nb_classes))
 ## Print out summary of the model
 model.summary()
 
+
 model.compile(loss='mse', optimizer='adam')
-history_object = model.fit_generator(train_generator, samples_per_epoch= len(train_dataset), validation_data=validation_generator, nb_val_samples=len(valid_dataset), nb_epoch=7, verbose=1)
+history_object = model.fit_generator(train_generator, samples_per_epoch= len(train_dataset), validation_data=validation_generator, nb_val_samples=len(valid_dataset), nb_epoch=6, verbose=1)
 
 ### print the keys contained in the history object
 print(history_object.history.keys())
@@ -166,6 +146,18 @@ plt.ylabel('mean squared error loss')
 plt.xlabel('epoch')
 plt.legend(['training set', 'validation set'], loc='upper right')
 plt.show()
+
+#from keras.utils.visualize_util import plot
+
+#plot(model, to_file='model.png', show_shapes=True)
+
+#img = cv2.imread('model.png')
+
+# original image
+#plt.subplots(figsize=(5,10))
+#plt.subplot(111)
+#plt.axis('off')
+#plt.imshow(img)
 
 model.save('./model.h5')
 print("Model Saved")
