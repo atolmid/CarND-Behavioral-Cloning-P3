@@ -218,17 +218,22 @@ The training and validation loss for each epoch was the following:
 ____________________________________________________________________________________________________
 Epoch 1/6
 207900/207900 [==============================] - 7189s - loss: 0.0712 - val_loss: 0.0174
+
 Epoch 2/6
 207900/207900 [==============================] - 7112s - loss: 0.0265 - val_loss: 0.0152
+
 Epoch 3/6
 207900/207900 [==============================] - 7118s - loss: 0.0229 - val_loss: 0.0123
+
 Epoch 4/6
 207900/207900 [==============================] - 7091s - loss: 0.0205 - val_loss: 0.0117
+
 Epoch 5/6
 207900/207900 [==============================] - 7065s - loss: 0.0192 - val_loss: 0.0106
+
 Epoch 6/6
 207900/207900 [==============================] - 7053s - loss: 0.0183 - val_loss: 0.0107
-dict_keys(['val_loss', 'loss'])
+
 
 Since the result was not initially the expected, I added an additional dropout layer, in order to reduce overfitting.
 In addition, I changed the activation function from 'relu' to 'elu', which seemed to produce better results.
@@ -241,17 +246,22 @@ I let it train for 6 epochs, again, with the following training and validation l
 
 Epoch 1/6
 75300/75300 [==============================] - 3134s - loss: 0.1275 - val_loss: 0.0215
+
 Epoch 2/6
 75300/75300 [==============================] - 3171s - loss: 0.1038 - val_loss: 0.0206
+
 Epoch 3/6
 75300/75300 [==============================] - 3066s - loss: 0.0931 - val_loss: 0.0240
+
 Epoch 4/6
 75300/75300 [==============================] - 2937s - loss: 0.1282 - val_loss: 0.0315
+
 Epoch 5/6
 75300/75300 [==============================] - 2927s - loss: 0.1068 - val_loss: 0.0299
+
 Epoch 6/6
 75300/75300 [==============================] - 2901s - loss: 0.0822 - val_loss: 0.0253
-dict_keys(['val_loss', 'loss'])
+
 
 
 ![alt text][image5]
