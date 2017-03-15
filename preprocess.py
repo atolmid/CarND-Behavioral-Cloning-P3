@@ -190,26 +190,6 @@ while not stop:
 del train
 
 validation_images, validation_angles = load_data(validation_samples)
-# print the dataset shape
-
-print()
-print("Validation Data Shape: {}".format(np.array(validation_images).shape))
-print()
-
-validation_images, validation_angles = flip_data(validation_images, validation_angles)
-# print the dataset shape
-
-print()
-print("Validation Data Shape: {}".format(np.array(validation_images).shape))
-print()
-
-validation_images, validation_angles = augmentation(validation_images, validation_angles)
-# print the dataset shape
-print()
-print("Validation Data Shape: {}".format(np.array(validation_images).shape))
-print()
-
-
 
 validation  = {'valid_dataset': validation_images, 'valid_labels': validation_angles}
 
