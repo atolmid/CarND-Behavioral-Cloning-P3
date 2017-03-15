@@ -218,3 +218,8 @@ Epoch 6/6
 
 
 ![alt text][image5]
+
+
+After running the model, the car was driving, staying always inside the track.
+I recorded a video, which shows the first two laps [Autonomous Driving in Simulator](https://github.com/atolmid/CarND-Behavioral-Cloning-P3/blob/master/run1.mp4).
+
