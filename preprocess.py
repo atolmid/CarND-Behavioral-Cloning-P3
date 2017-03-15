@@ -19,15 +19,6 @@ with open('./data/driving_log.csv') as csvfile:
 
 train_samples, validation_samples = train_test_split(samples, test_size=0.2)
 
-
-# print thenumber of samples
-print()
-print("Number of training examples: {}".format(len(train_samples)))
-print()
-
-print()
-print("Number of validation examples {}".format(len(validation_samples)))
-print()
 # print the dataset shape
 print()
 print("Training Data Shape: {}".format(np.array(train_samples).shape))
@@ -41,10 +32,9 @@ batch_size=100
 correction = 0.25
 
 
+# using functions random_shear and random_rotate of github user hangyao, 
+# which I found googling additional transforms I could include
 def random_shear(image, angle, shear_dist=50):
-    '''
-    Randomly shear image.
-    '''
     rows, cols, _ = image.shape
     d = np.random.randint(-shear_dist, shear_dist+1)
     pt_1 = np.float32([[0, rows], [cols, rows], [cols/2, rows/2]])
@@ -57,9 +47,6 @@ def random_shear(image, angle, shear_dist=50):
 
 
 def random_rotate(image, angle, angle_range=5):
-    '''
-    Randomly rotate image.
-    '''
     dangle = np.random.uniform(-angle_range, angle_range)
     rows, cols, _ = image.shape
     M = cv2.getRotationMatrix2D((cols/2,rows/2),dangle,1)
@@ -88,7 +75,6 @@ def add_random_shadow(image):
     X_m = np.mgrid[0:image.shape[0],0:image.shape[1]][0]
     Y_m = np.mgrid[0:image.shape[0],0:image.shape[1]][1]
     shadow_mask[((X_m-top_x)*(bot_y-top_y) -(bot_x - top_x)*(Y_m-top_y) >=0)]=1
-    #random_bright = .25+.7*np.random.uniform()
     if np.random.randint(2)==1:
         random_bright = .5
         cond1 = shadow_mask==1
@@ -109,25 +95,20 @@ def load_data(samples):
         try:
             i+=1
             name = './data/IMG/'+batch_sample[0].split('/')[-1]
-            #print("name : ", name)
             center_image = cv2.imread(name)
             center_angle = float(batch_sample[3])
             images.append(center_image)
             angles.append(center_angle)
             name1 = './data/IMG/'+batch_sample[1].split('/')[-1]
-            #print("name1 : ", name1)
             left_image = cv2.imread(name1)
             images.append(left_image)
             angles.append(center_angle+correction)
             name2 = './data/IMG/'+batch_sample[2].split('/')[-1]
-            #print("name1 : ", name2)
             right_image = cv2.imread(name2)
             images.append(right_image)
             angles.append(center_angle-correction)
         except ValueError: 
             print('Line {} is corrupt!'.format(i))
-    print("images number : ", len(images))
-    print("angles number : ", len(angles))
     return images, angles
     
 
@@ -139,8 +120,6 @@ def flip_data(images, angles):
         augmented_angles.append(angle)
         augmented_images.append(cv2.flip(image,1))
         augmented_angles.append(angle*-1.0)
-    print("augmented_images number : ", len(augmented_images))
-    print("augmented_angles number : ", len(augmented_angles))
     return augmented_images, augmented_angles
 
 def augmentation(images, angles):
@@ -158,8 +137,6 @@ def augmentation(images, angles):
         image_tr, angle_tr = random_shear(image, angle, shear_dist=50)
         augmented_images.append(image_tr)
         augmented_angles.append(angle_tr)
-    print("augmented images number : ", len(augmented_images))
-    print("augmented labels number : ", len(augmented_angles))
     return augmented_images, augmented_angles
 
 
